@@ -29,12 +29,12 @@ const RegisterForm = () => {
       case 'firstName':
       case 'lastName':
       case 'company':
-      case 'street':
       case 'city':
       case 'state':
-      case 'country':
         if (!value.trim()) {
           error = `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
+        } else if (/[\d]/.test(value)) {
+          error = `${name.charAt(0).toUpperCase() + name.slice(1)} cannot contain numbers`;
         }
         break;
       case 'email':
@@ -61,17 +61,24 @@ const RegisterForm = () => {
       case 'postalCode':
         if (!value) {
           error = 'Postal Code is required';
-        } else if (!/^[1-9]\d{5}$/.test(value)) {
-          error = 'Postal Code must be exactly 6 digits and not start with 0';
+        } else if (!/^[1-9]\d{5}$/.test(value) || value.startsWith('123')) {
+          error = 'Postal Code must be exactly 6 digits ';
         }
         break;
       case 'phone':
         if (!value) {
           error = 'Phone number is required';
-        } else if (!/^[1-9]\d{9}$/.test(value)) {
-          error = 'Phone number must be exactly 10 digits and not start with 0';
+        } else if (!/^[1-9]\d{9}$/.test(value) || value.startsWith('12345')) {
+          error = 'Phone number must be exactly 10 digits ';
         } else if (/^(.)\1{9}$/.test(value)) {
           error = 'Phone number cannot be all the same digit';
+        }
+        break;
+      case 'street':
+        if (!value.trim()) {
+          error = 'Street is required';
+        } else if (!/^[a-zA-Z\s]+[0-9]+$/.test(value)) {
+          error = 'Street must be followed by a number';
         }
         break;
       default:

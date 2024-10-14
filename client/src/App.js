@@ -1,20 +1,36 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter as Router  ,Routes, Route} from 'react-router-dom'
-import Register from './Pages/Register';
-import Login from './Pages/Login';
-import Home from './Pages/Home';
-import Dashboard from './Pages/Dashboard';
-
+import "bootstrap/dist/css/bootstrap.min.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Register from "./Pages/Register";
+import Login from "./Pages/Login";
+import Home from "./Pages/Home";
+import Dashboard from "./Pages/Dashboard";
+import Track from "./Pages/Track";
+import Booking from "./Pages/Booking";
+import Schedule from "./Pages/Schedule";
+import AdminDashboard from "./Pages/AdminPages/AdminDashboard";
+import AppLayout from "./Components/AppLayout/AppLayout";
+import Ship from "./Pages/AdminPages/Ship";
+import ScheduledShips from "./Pages/AdminPages/ScheduledShips";
+import AddShipFormPage from "./Pages/AdminPages/AddShipFormPage";
 function App() {
   return (
     <div className="App">
       <Router>
         <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/track" element={<Track />} />
+          <Route path="/booking" element={<Booking />} />
+          <Route path="/schedule" element={<Schedule />} />
 
-          <Route path="/register" element={<Register/>}/>
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/" element={<Home/>}/>
-          <Route path="/dashboard" element={<Dashboard/>}/>
+          <Route element={<AppLayout />}>
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route path="/admin-dashboard/ships" element={<Ship />} />
+            <Route path="/admin-dashboard/ships-form" element={<AddShipFormPage />} />
+            <Route path="/admin-dashboard/schedules" element={<ScheduledShips />} />
+          </Route>
         </Routes>
       </Router>
     </div>

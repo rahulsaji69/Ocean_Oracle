@@ -5,13 +5,11 @@ const jwt = require('jsonwebtoken');
 exports.registerUser = async (req, res) => {
   const { firstName, lastName, email, password, confirmPassword, company, street, postalCode, city, state, country, phone } = req.body;
 
-  // Validate that passwords match
   if (password !== confirmPassword) {
     return res.status(400).json({ message: "Passwords do not match" });
   }
 
   try {
-    // Check if user already exists
     let user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ message: "User already exists" });
@@ -34,6 +32,7 @@ exports.registerUser = async (req, res) => {
       state,
       country,
       phone,
+      role: 'customer',
     });
 
     await user.save();
@@ -61,7 +60,7 @@ exports.loginUser = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id, email: user.email, role: user.role },
       process.env.SECRET_KEY,
       { expiresIn: '10h' }
     );
@@ -73,7 +72,8 @@ exports.loginUser = async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        name: user.firstName
+        name: user.firstName,
+        role: user.role
       }
     });
   } catch (error) {

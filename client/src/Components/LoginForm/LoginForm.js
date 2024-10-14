@@ -60,7 +60,7 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submit Clicked");
+
 
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
@@ -77,10 +77,16 @@ const LoginForm = () => {
           localStorage.setItem('user', JSON.stringify(response.data.user));
          
           toast.success("Login successful!");
-
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 1000);
+          if(response.data.user.role === 'customer'){
+            setTimeout(() => {
+              navigate("/dashboard");
+            }, 1000);
+          } else {
+            setTimeout(() => {
+              navigate("/admin-dashboard");
+            }, 1000);
+          }
+          
         }
       } catch (error) {
         console.error("Login error:", error);

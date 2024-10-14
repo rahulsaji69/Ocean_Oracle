@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Add this at the top of the file */
+.home {
+  padding-top: 64px; /* This should match the height of your AppBar */
+}
+
 /* Basic Reset */
 * {
   margin: 0;
@@ -6,130 +13,182 @@
 }
 
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: 'Poppins', sans-serif;
   color: #333;
   line-height: 1.6;
 }
 
 .container {
-  width: 80%;
+  width: 90%;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 /* Header Section */
 .header-section {
   background: url('/src/Assets/cc.jpg') no-repeat center center/cover;
-  height: 100vh;
-  color: white;
+  height: calc(100vh - 64px); /* Subtract the AppBar height from 100vh */
+  color: #2c3e50;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  position: relative;
 }
 
-.header-content {
-  max-width: 600px;
-}
-
-.header-content h1 {
-  font-size: 3rem;
-  font-weight: bold;
+.main-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  padding: 40px 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
 }
 
 .tracking {
-  margin-top: 20px;
+  position: absolute;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 400px;
+  max-width: 90%;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .tracking h3 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #fcdc4c;
 }
 
 .tracking-options {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
 .tracking-options label {
-  margin-bottom: 10px;
-  flex-direction: column;
-  align-items: flex-end;
-}
-.tracking-container {
   display: flex;
-  flex-direction: column; /* Stack items vertically */
-  align-items: flex-end; /* Align items to the right */
+  align-items: center;
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 
-.tracking-options input[type="text"] {
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
-  margin-top: 10px;
+.tracking-options input[type="radio"] {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.tracking input[type="text"] {
   width: 100%;
+  padding: 12px;
+  border: 2px solid #ddb347;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.tracking input[type="text"]:focus {
+  outline: none;
+  border-color: #fcdc4c;
+  box-shadow: 0 0 0 3px rgba(252, 220, 76, 0.3);
 }
 
 /* Solutions Section */
 .solutions-section {
   background-color: #f9f9f9;
-  padding: 50px 0;
+  padding: 80px 0;
 }
 
 .solutions-section h2 {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  color: #2c3e50;
 }
 
 .solutions-section p {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 60px;
   font-size: 1.2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.solutions-grid {
+.solutions-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
   justify-items: center;
 }
-.cargo-cover-image {
-  width: 100%; /* Adjust width as needed */
-  height: auto; /* Maintain aspect ratio */
-  margin-top: 100px; /* Space above the image */
-}
+
 .solution {
   text-align: center;
   background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .solution:hover {
   transform: translateY(-10px);
-}
-
-.solution img {
-  max-width: 100px;
-  margin-bottom: 15px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
 .solution h3 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
+  font-size: 1.4rem;
+  margin-top: 20px;
+  color: #2c3e50;
 }
 
 /* Media Queries */
+@media (max-width: 1200px) {
+  .tracking {
+    right: 5%;
+  }
+}
+
 @media (max-width: 768px) {
-  .solutions-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .main-title {
+    font-size: 2.5rem;
+    padding: 30px 20px;
+  }
+
+  .tracking {
+    position: static;
+    width: 90%;
+    margin: 20px auto;
+    transform: none;
+  }
+
+  .solutions-section h2 {
+    font-size: 2.2rem;
+  }
+
+  .solutions-section p {
+    font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .solutions-grid {
-    grid-template-columns: 1fr;
+  .main-title {
+    font-size: 2rem;
+    padding: 20px 10px;
+  }
+
+  .tracking {
+    padding: 20px;
+  }
+
+  .solution {
+    padding: 20px;
   }
 }

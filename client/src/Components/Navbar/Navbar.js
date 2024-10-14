@@ -31,8 +31,8 @@ function Navbar () {
       <div className="navbar-menu">
         <a href="#search">Search</a>
         <a href="#tracking">Tracking</a>
-        <a href="#language">EN</a>
-        <a href="/login">myMSC</a>
+        
+        <a href="/login">Login</a>
       </div>
       <button className="navbar-toggler">&#9776;</button>
     </nav>

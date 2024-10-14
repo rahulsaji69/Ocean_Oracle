@@ -7,7 +7,7 @@ body, html {
 }
 
 .background {
-    background-image: url('/src/Assets/cc.jpg'); /* Replace with your actual image path */
+    background-image: url('/src/Assets/ii.jpg'); /* Replace with your actual image path */
     background-size: cover;
     background-position: center;
     background-attachment: fixed; /* Keeps the background fixed */
