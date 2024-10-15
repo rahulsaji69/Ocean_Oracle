@@ -1,0 +1,62 @@
+.dialog-title {
+  font-weight: bold;
+  font-size: 1.5rem; /* Increase font size for better visibility */
+}
+
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-actions {
+  justify-content: flex-end;
+}
+
+/* Improved TextField Styles */
+.MuiTextField-root {
+  margin-bottom: 20px !important;
+}
+
+.MuiInputLabel-root {
+  color: #2c3e50 !important;
+  font-weight: 500;
+}
+
+.MuiOutlinedInput-root {
+  border-radius: 8px;
+  background-color: #ffffff; /* White background for better contrast */
+  border: 1px solid #e0e0e0; /* Default border color */
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: #e0e0e0 !important; /* Default border color */
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #ffd54f !important; /* Hover border color */
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #2c3e50 !important; /* Focused border color */
+}
+
+/* Remove the yellow outline */
+.MuiOutlinedInput-root.Mui-focused {
+  box-shadow: none; /* Remove the default box shadow */
+}
+
+/* Button Styles */
+.MuiButton-containedPrimary {
+  background-color: #fcdc4c !important;
+  color: #2c3e50 !important;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 25px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.MuiButton-containedPrimary:hover {
+  background-color: #ffd54f !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

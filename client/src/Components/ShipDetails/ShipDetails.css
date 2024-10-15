@@ -81,6 +81,12 @@ button[type="submit"]:hover {
   color: #fff;
 }
 
+.error-text {
+  color: red; /* Style for error messages */
+  font-size: 14px;
+  margin-top: -8px; /* Adjust margin for better spacing */
+}
+
 @media (max-width: 600px) {
   .ship-details-container {
     padding: 10px;

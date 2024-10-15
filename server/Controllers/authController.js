@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../Models/User.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');  
 
@@ -91,6 +91,82 @@ exports.getUser = async (req, res) => {
     res.json({ user });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.updateUserProfile = async (req, res) => {
+  const { firstName, lastName, email, company, street, postalCode, city, state, country, phone } = req.body;
+  const userId = req.params.id;
+
+  try {
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (email) user.email = email;
+    if (company) user.company = company;
+    if (street) user.street = street;
+    if (postalCode) user.postalCode = postalCode;
+    if (city) user.city = city;
+    if (state) user.state = state;
+    if (country) user.country = country;
+    if (phone) user.phone = phone;
+
+    await user.save();
+
+    res.status(200).json({
+      message: 'Profile updated successfully',
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        company: user.company,
+        street: user.street,
+        postalCode: user.postalCode,
+        city: user.city,
+        state: user.state,
+        country: user.country,
+        phone: user.phone,
+        role: user.role,
+      },
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.getProfileDetails = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      company: user.company,
+      street: user.street,
+      postalCode: user.postalCode,
+      city: user.city,
+      state: user.state,
+      country: user.country,
+      phone: user.phone,
+    });
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

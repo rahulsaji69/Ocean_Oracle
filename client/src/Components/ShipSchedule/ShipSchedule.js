@@ -1,143 +1,102 @@
-import React, { useState } from 'react';
-import { 
-  List, 
-  ListItem, 
-  ListItemText, 
-  Typography, 
-  Stepper, 
-  Step, 
-  StepLabel, 
-  Button, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions,
-  TextField
-} from '@mui/material';
-import './ShipSchedule.css';
-
-const mockShips = [
-  {
-    id: 1,
-    name: 'MSC Gülsün',
-    currentLocation: 'Singapore',
-    route: ['Rotterdam', 'Singapore', 'Shanghai', 'Los Angeles'],
-    eta: '2023-06-15T10:00:00',
-    etd: '2023-06-16T14:00:00'
-  },
-  // Add more mock ships here
-];
+import React, { useEffect, useState } from "react";
+import {
+  Typography,
+  Button,
+  Grid,
+  Paper,
+  Stepper,
+  Step,
+  StepLabel,
+} from "@mui/material";
+import AddSchedule from "./AddSchedule"; // Import the AddSchedule component
+import axios from "axios"; // Import axios for API calls
+import "./ShipSchedule.css";
 
 const ShipSchedule = () => {
-  const [selectedShip, setSelectedShip] = useState(null);
-  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
-  const [updatedShipData, setUpdatedShipData] = useState({});
+  const [schedules, setSchedules] = useState([]); // State to hold the schedules
+  const [isAddScheduleDialogOpen, setIsAddScheduleDialogOpen] = useState(false);
+  const Base_URL = process.env.REACT_APP_BASE_URL;
 
-  const handleShipClick = (ship) => {
-    setSelectedShip(ship);
+  const handleAddScheduleClick = () => {
+    setIsAddScheduleDialogOpen(true);
   };
 
-  const handleUpdateClick = () => {
-    setUpdatedShipData(selectedShip);
-    setIsUpdateDialogOpen(true);
+  const handleScheduleAdded = () => {
+    console.log("Schedule added successfully");
+    fetchSchedules(); // Fetch schedules again after adding a new one
   };
 
-  const handleUpdateClose = () => {
-    setIsUpdateDialogOpen(false);
+  const fetchSchedules = async () => {
+    try {
+      const response = await axios.get(`${Base_URL}/api/ships/schedules`);
+      setSchedules(response.data);
+    } catch (error) {
+      console.error("Error fetching schedules:", error);
+    }
   };
 
-  const handleUpdateSave = () => {
-    // Here you would typically send the updated data to your backend
-    console.log('Updated ship data:', updatedShipData);
-    setSelectedShip(updatedShipData);
-    setIsUpdateDialogOpen(false);
-  };
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setUpdatedShipData(prevData => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
+  useEffect(() => {
+    fetchSchedules(); // Fetch schedules when component mounts
+  }, [Base_URL]);
 
   return (
     <div className="ship-schedule">
-      <Typography variant="h4" className="page-title">Ship Schedules</Typography>
-      <div className="schedule-container">
-        <List className="ship-list">
-          {mockShips.map((ship) => (
-            <ListItem 
-              key={ship.id} 
-              button 
-              onClick={() => handleShipClick(ship)}
-              selected={selectedShip && selectedShip.id === ship.id}
-            >
-              <ListItemText primary={ship.name} />
-            </ListItem>
-          ))}
-        </List>
-        {selectedShip && (
-          <div className="ship-details">
-            <Typography variant="h5">{selectedShip.name}</Typography>
-            <Typography>Current Location: {selectedShip.currentLocation}</Typography>
-            <Typography>ETA: {new Date(selectedShip.eta).toLocaleString()}</Typography>
-            <Typography>ETD: {new Date(selectedShip.etd).toLocaleString()}</Typography>
-            <Stepper activeStep={selectedShip.route.indexOf(selectedShip.currentLocation)} orientation="vertical">
-              {selectedShip.route.map((port, index) => (
-                <Step key={port}>
-                  <StepLabel>{port}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-            <Button variant="contained" color="primary" onClick={handleUpdateClick}>
-              Update Details
-            </Button>
-          </div>
-        )}
-      </div>
-      <Dialog open={isUpdateDialogOpen} onClose={handleUpdateClose}>
-        <DialogTitle>Update Ship Details</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="dense"
-            name="currentLocation"
-            label="Current Location"
-            type="text"
-            fullWidth
-            value={updatedShipData.currentLocation || ''}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            name="eta"
-            label="Estimated Time of Arrival"
-            type="datetime-local"
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-            value={updatedShipData.eta ? updatedShipData.eta.slice(0, 16) : ''}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            name="etd"
-            label="Estimated Time of Departure"
-            type="datetime-local"
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-            value={updatedShipData.etd ? updatedShipData.etd.slice(0, 16) : ''}
-            onChange={handleInputChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleUpdateClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleUpdateSave} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <Typography variant="h4" className="page-title">
+        Ship Schedules
+      </Typography>
+
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleAddScheduleClick}
+        style={{ marginTop: "20px" }}
+      >
+        Add Schedule
+      </Button>
+
+      <AddSchedule
+        open={isAddScheduleDialogOpen}
+        onClose={() => setIsAddScheduleDialogOpen(false)}
+        onScheduleAdded={handleScheduleAdded}
+      />
+
+      <Grid container spacing={2} style={{ marginTop: "20px" }}>
+        {schedules.map((schedule) => (
+          <Grid item xs={12} md={6} key={schedule._id}>
+            <Paper elevation={3} style={{ padding: "20px" }}>
+              <Typography variant="h6">
+                Ship ID: {schedule.shipId?.shipName || "N/A"}
+              </Typography>
+              <Typography variant="body1">
+                Starting Port: {schedule.startingPort}
+              </Typography>
+              <Typography variant="body1">
+                Destination Port: {schedule.destinationPort}
+              </Typography>
+              <Typography variant="body1">
+                Current Location: {schedule.currentLocation}
+              </Typography>
+              <Typography variant="body1">
+                ETA: {new Date(schedule.eta).toLocaleString()}
+              </Typography>
+              <Typography variant="body1">
+                ETD: {new Date(schedule.etd).toLocaleString()}
+              </Typography>
+
+              <Typography variant="body1" style={{ marginTop: "10px" }}>
+                Intermediate Ports:
+              </Typography>
+              <Stepper activeStep={0} alternativeLabel>
+                {schedule.intermediatePorts.map((port, index) => (
+                  <Step key={index}>
+                    <StepLabel>{port}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
     </div>
   );
 };

@@ -19,7 +19,7 @@ exports.createShip = async (req, res) => {
   
       const newShip = await ship.save();
   
-      res.status(201).json(newShip);
+      res.status(200).json(newShip);
   
     } catch (error) {
         console.log(error);

@@ -11,14 +11,19 @@ import {
   IconButton, 
   AppBar, 
   Toolbar, 
-  Typography 
+  Typography, 
+  Button, 
+  Menu, 
+  MenuItem 
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import AccountCircle from "@mui/icons-material/AccountCircle"; // Import AccountCircle icon
 import Logo from '../../Assets/Logo.jpg'; // Import the logo
 
 const Dashboard = () => {
   const [userDetails, setUserDetails] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null); // State for the menu anchor
   const navigate = useNavigate();
 
   const fetchUserDetails = () => {
@@ -31,19 +36,18 @@ const Dashboard = () => {
 
   const menuItems = [
     "Dashboard",
-    "Instant quote",
     "eBookings",
     "Shipping Instructions",
     "Free time Detention Demurrage",
-    "Documents",
-    "My Profile",
-    "Logout" // Add Logout to the drawer menu
+    "My Profile"
   ];
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user"); // Clear user details as well
     toast.success("Logged out successfully!");
-    navigate("/");
+    navigate("/", { replace: true }); // Redirect to the home page and replace the current entry
+    // No need for window.location.reload() as the navigation will handle it
   };
 
   const toggleDrawer = (open) => (event) => {
@@ -51,6 +55,14 @@ const Dashboard = () => {
       return;
     }
     setDrawerOpen(open);
+  };
+
+  const handleProfileClick = (event) => {
+    setAnchorEl(event.currentTarget); // Set the anchor element for the menu
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null); // Close the menu
   };
 
   const drawerList = (
@@ -62,11 +74,7 @@ const Dashboard = () => {
       <List>
         {menuItems.map((text, index) => (
           <ListItem button key={text} onClick={() => {
-            if (text === "Logout") {
-              handleLogout();
-            } else {
-              navigate(`/${text.replace(" ", "").toLowerCase()}`);
-            }
+            navigate(`/${text.replace(" ", "").toLowerCase()}`);
           }}>
             <ListItemText primary={text} />
           </ListItem>
@@ -78,7 +86,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <ToastContainer />
-      <AppBar position="static" style={{ backgroundColor: 'white', color: '#333' }}>
+      <AppBar position="fixed" style={{ backgroundColor: 'white', color: '#333' }}>
         <Toolbar style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <IconButton
             edge="start"
@@ -96,6 +104,25 @@ const Dashboard = () => {
           <div className="navbar-menu" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             <Link to="#search" style={{ textDecoration: 'none', color: '#333', fontWeight: 'bold' }}>Search</Link>
             <Link to="#tracking" style={{ textDecoration: 'none', color: '#333', fontWeight: 'bold' }}>Tracking</Link>
+            
+            {/* User Profile Button */}
+            <Button
+              onClick={handleProfileClick}
+              style={{ display: 'flex', alignItems: 'center', marginLeft: '20px' }}
+            >
+              <Typography variant="subtitle1" style={{ marginRight: '10px' }}>
+                {userDetails ? userDetails.name : "Guest"}
+              </Typography>
+              <AccountCircle style={{ fontSize: '30px', color: '#333' }} />
+            </Button>
+            {/* User Menu */}
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleCloseMenu}
+            >
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
           </div>
         </Toolbar>
       </AppBar>

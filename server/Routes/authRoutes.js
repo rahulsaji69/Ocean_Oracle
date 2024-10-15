@@ -6,6 +6,10 @@ router.post('/register',authController.registerUser );
 
 router.post('/login', authController.loginUser);
 
+router.get('/profile/:id', authController.getProfileDetails);
+
+router.put('/update-profile/:id', authController.updateUserProfile);
+
 // router.post('/send-otp-forget-password', authController.forGetPassWord);
 
 // router.post('/forget-password', authController.)
