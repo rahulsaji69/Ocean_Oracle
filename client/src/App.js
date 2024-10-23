@@ -13,6 +13,9 @@ import Ship from "./Pages/AdminPages/Ship";
 import ScheduledShips from "./Pages/AdminPages/ScheduledShips";
 import AddShipFormPage from "./Pages/AdminPages/AddShipFormPage";
 import Profile from "./Pages/Profile";
+import LoginNavbar from "./Pages/LoginNavbar";
+import UsersList from "./Pages/AdminPages/UsersList";
+import ShipSchedules from "./Pages/ShipSchedules";
 function App() {
   return (
     <div className="App">
@@ -23,15 +26,17 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/track" element={<Track />} />
-          <Route path="/booking" element={<Booking />} />
+          <Route path="/ebookings" element={<Booking />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/myprofile" element={<Profile />} />
-          
+          <Route path="/login-navbar" element={<LoginNavbar />} />
+          <Route path="/shipschedules" element={<ShipSchedules />} />
           <Route element={<AppLayout />}>
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/admin-dashboard/ships" element={<Ship />} />
             <Route path="/admin-dashboard/ships-form" element={<AddShipFormPage />} />
             <Route path="/admin-dashboard/schedules" element={<ScheduledShips />} />
+            <Route path="/admin-dashboard/users" element={<UsersList />} />
           </Route>
         </Routes>
       </Router>

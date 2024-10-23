@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./UserDashboard.css";
+
 import { 
   Drawer, 
   List, 
@@ -25,6 +26,7 @@ const Dashboard = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null); // State for the menu anchor
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('schedules');
 
   const fetchUserDetails = () => {
     setUserDetails(JSON.parse(localStorage.getItem("user")));
@@ -96,8 +98,8 @@ const Dashboard = () => {
           >
             <MenuIcon />
           </IconButton>
-          <div className="navbar-logo" style={{ flexGrow: 1, textAlign: 'center' }}>
-            <Link to="/">
+          <div className="navbar-logo" style={{ flexGrow: 1, marginLeft: '750px' }}>
+            <Link to="/dashboard">
               <img src={Logo} alt="Logo" style={{ height: '40px' }} />
             </Link>
           </div>
@@ -131,19 +133,59 @@ const Dashboard = () => {
       </Drawer>
       <div className="header-section">
         <h1 className="main-title">Welcome to Your Dashboard</h1>
-        <div className="tracking">
-          <h3>Tracking</h3>
-          <div className="tracking-options">
-            <label>
-              <input type="radio" name="tracking" value="container" defaultChecked />
-              Container / Bill of Lading Number
-            </label>
-            <label>
-              <input type="radio" name="tracking" value="booking" />
-              Booking Number
-            </label>
+        <div className="tracking-container">
+          <div className="tracking-tabs">
+            <button 
+              className={`tab ${activeTab === 'tracking' ? 'active' : ''}`}
+              onClick={() => setActiveTab('tracking')}
+            >
+              TRACKING
+            </button>
+            <button 
+              className={`tab ${activeTab === 'schedules' ? 'active' : ''}`}
+              onClick={() => setActiveTab('schedules')}
+            >
+              SCHEDULES
+            </button>
+            <button 
+              className={`tab ${activeTab === 'contacts' ? 'active' : ''}`}
+              onClick={() => setActiveTab('contacts')}
+            >
+              CONTACTS
+            </button>
           </div>
-          <input type="text" placeholder="Enter tracking number..." className="search-input" />
+          {activeTab === 'tracking' && (
+            <div className="tracking-content">
+              <div className="tracking-options">
+                <label>
+                  <input type="radio" name="tracking" value="container" defaultChecked />
+                  Container / Bill of Lading Number
+                </label>
+                <label>
+                  <input type="radio" name="tracking" value="booking" />
+                  Booking Number
+                </label>
+              </div>
+              <input type="text" placeholder="Search..." className="search-input" />
+            </div>
+          )}
+          {activeTab === 'schedules' && (
+            <div className="schedules-content">
+              <div className="port-inputs">
+                <input type="text" placeholder="From (Port)" className="port-input" />
+                <button className="swap-button">⇄</button>
+                <input type="text" placeholder="To (Port)" className="port-input" />
+              </div>
+              <input type="date" className="date-input" />
+              <button className="search-button">Search</button>
+            </div>
+          )}
+          {activeTab === 'contacts' && (
+            <div className="contacts-content">
+              {/* Add contacts content here */}
+              <p>Contacts information will be displayed here.</p>
+            </div>
+          )}
         </div>
       </div>
       <div className="main-content">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import './UserProfile.css';
 
 const UserProfile = () => {
@@ -18,7 +18,7 @@ const UserProfile = () => {
   });
   const [errors, setErrors] = useState({});
   const Base_URL = process.env.REACT_APP_BASE_URL;
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   
   // Get user ID from local storage
   const userData = JSON.parse(localStorage.getItem('user'));

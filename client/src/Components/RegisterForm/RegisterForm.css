@@ -44,8 +44,8 @@ h2 {
 input[type="text"], input[type="email"], input[type="password"], select {
     width: calc(100% - 16px); /* Reduced the width slightly */
     padding: 8px; /* Reduced padding for smaller fields */
-    margin: 8px 0; /* Reduced margin for better spacing */
-    border: 1px solid #0b0b0b !important;
+    
+    
     border-radius: 4px;
     font-size: 14px; /* Reduce the font size in inputs */
 }

@@ -1,8 +1,10 @@
 import React from 'react'
-
+import AdminDash from '../../Components/AppLayout/AdminDash'
 function AdminDashboard() {
   return (
-    <div>AdminDashboard</div>
+    <div>
+      <AdminDash />
+    </div>
   )
 }
 

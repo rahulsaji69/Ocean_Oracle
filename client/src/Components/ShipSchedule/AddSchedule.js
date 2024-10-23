@@ -56,7 +56,7 @@ const AddSchedule = ({ open, onClose, onScheduleAdded }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Add Ship Schedule</DialogTitle>
       <DialogContent>
         <TextField
@@ -109,6 +109,12 @@ const AddSchedule = ({ open, onClose, onScheduleAdded }) => {
           fullWidth
           value={scheduleData.eta}
           onChange={handleChange}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          inputProps={{
+            step: 300, // 5 min steps
+          }}
         />
         <TextField
           label="ETD"
@@ -117,6 +123,12 @@ const AddSchedule = ({ open, onClose, onScheduleAdded }) => {
           fullWidth
           value={scheduleData.etd}
           onChange={handleChange}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          inputProps={{
+            step: 300, // 5 min steps
+          }}
         />
       </DialogContent>
       <DialogActions>

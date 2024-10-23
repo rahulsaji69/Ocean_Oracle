@@ -18,17 +18,17 @@ const ShipDetails = () => {
     inspectionStatus: ''
   });
 
-  const [errors, setErrors] = useState({}); // State for error messages
+  const [errors, setErrors] = useState({}); 
   const Base_URL = process.env.REACT_APP_BASE_URL;
 
   const validate = (name, value) => {
     let error = '';
     switch (name) {
       case 'imoNumber':
-        const imoRegex = /^(?!0)\d{6}$/; // Must be 6 digits, cannot start with 0
+        const imoRegex = /^(?!0)\d{6}$/; 
         const invalidImoPatterns = ["123456", "222222"];
         const firstFourDigits = value.slice(0, 4);
-        const repeatingDigitsRegex = /^(.)\1{5}$/; // Check for repeating digits
+        const repeatingDigitsRegex = /^(.)\1{5}$/; 
         if (!imoRegex.test(value) || 
             invalidImoPatterns.includes(value) || 
             firstFourDigits === "1234" || 
@@ -129,7 +129,7 @@ const ShipDetails = () => {
 
         <div className="form-section">
           <h3>Compliance Information</h3>
-          <input type="text" name="inspectionStatus" value={shipData.inspectionStatus} onChange={handleChange} onBlur={handleBlur} placeholder="Inspection Status" required />
+          <input type="texts" name="inspectionStatus" value={shipData.inspectionStatus} onChange={handleChange} onBlur={handleBlur} placeholder="Inspection Status" required />
           {errors.inspectionStatus && <span className="error-text">{errors.inspectionStatus}</span>}
         </div>
 

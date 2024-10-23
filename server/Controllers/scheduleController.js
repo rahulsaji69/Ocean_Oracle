@@ -1,4 +1,4 @@
-const Schedule = require('../models/Schedule'); // Assuming you create a Schedule model
+const Schedule = require('../Models/Schedule'); // Assuming you create a Schedule model
 
 exports.createSchedule = async (req, res) => {
   const { shipId, startingPort, intermediatePorts, destinationPort, currentLocation, eta, etd } = req.body;

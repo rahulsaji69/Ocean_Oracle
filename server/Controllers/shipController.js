@@ -1,4 +1,4 @@
-const Ship = require('../Models/Ship'); // Assuming you have a Ship model
+const Ship = require('../models/Ship'); // Assuming you have a Ship model
 
 exports.createShip = async (req, res) => {
     // Destructure fields from the request body
