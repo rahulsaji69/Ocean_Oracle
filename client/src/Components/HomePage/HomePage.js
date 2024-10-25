@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
 //import cargoCoverImage from '../../Assets/cargo cover solution.jpg'; 
 
-const Home = () => {
+const HomePage = () => {
   const [activeTab, setActiveTab] = useState('schedules');
+  const [fromPort, setFromPort] = useState('');
+  const [toPort, setToPort] = useState('');
+  const [date, setDate] = useState('');
+  const navigate = useNavigate();
 
   return (
     <div className="home">
@@ -49,12 +54,38 @@ const Home = () => {
           {activeTab === 'schedules' && (
             <div className="schedules-content">
               <div className="port-inputs">
-                <input type="text" placeholder="From (Port)" className="port-input" />
-                <button className="swap-button">⇄</button>
-                <input type="text" placeholder="To (Port)" className="port-input" />
+                <input
+                  type="text"
+                  placeholder="From (Port)"
+                  className="port-input"
+                  value={fromPort}
+                  onChange={(e) => setFromPort(e.target.value)}
+                />
+                <button className="swap-button" onClick={() => {
+                  const temp = fromPort;
+                  setFromPort(toPort);
+                  setToPort(temp);
+                }}>⇄</button>
+                <input
+                  type="text"
+                  placeholder="To (Port)"
+                  className="port-input"
+                  value={toPort}
+                  onChange={(e) => setToPort(e.target.value)}
+                />
               </div>
-              <input type="date" className="date-input" />
-              <button className="search-button">Search</button>
+              <input
+                type="date"
+                className="date-input"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+              <button
+                className="search-button"
+                onClick={() => navigate(`/shipschedules?from=${fromPort}&to=${toPort}&date=${date}`)}
+              >
+                Search
+              </button>
             </div>
           )}
           {activeTab === 'contacts' && (
@@ -96,4 +127,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomePage;

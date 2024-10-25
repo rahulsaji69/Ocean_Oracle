@@ -59,6 +59,10 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ message: 'Invalid password' });
     }
 
+    if (user.status === 'disabled') {
+      return res.status(403).json({ message: 'Account is disabled. Please contact support.' });
+    }
+
     const token = jwt.sign(
       { id: user._id, email: user.email, role: user.role },
       process.env.SECRET_KEY,

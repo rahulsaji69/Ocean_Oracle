@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './BookingForm.css';
+import { useNavigate } from 'react-router-dom';
 
 const BookingForm = () => {
   const [formData, setFormData] = useState({
@@ -59,6 +60,7 @@ const BookingForm = () => {
     // Additional Services
     additionalServices: [],
   });
+  const navigate = useNavigate();
 
   // const [errors, setErrors] = useState({});
   const Base_URL = process.env.REACT_APP_BASE_URL;
@@ -113,9 +115,10 @@ const BookingForm = () => {
           preferredShippingDate: formData.preferredShippingDate ? new Date(formData.preferredShippingDate).toISOString() : null,
         };
         console.log("Sending booking data:", bookingData);
-        const response = await axios.post(`${Base_URL}/api/bookings`, bookingData);
+        const response = await axios.post(`${Base_URL}/api/booking/bookings`, bookingData);
         console.log('Booking Successful:', response.data);
         alert('Booking submitted successfully!');
+        navigate('/dashboard')
         // Reset form or redirect user
       } catch (error) {
         console.error('Booking error:', error);

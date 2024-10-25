@@ -1,7 +1,17 @@
 // Import necessary modules
 import axios from "axios"; // For making HTTP requests
 import React, { useEffect, useState } from "react"; // For React functionality
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Button } from '@mui/material';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+  Button,
+} from "@mui/material";
 import "./UserList.css";
 
 function UserList() {
@@ -12,7 +22,9 @@ function UserList() {
   // Function to fetch users from the API
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/admin/users`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/api/admin/users`
+      );
       console.log(response); // Log the response data for debugging
       setUsers(response.data.data.users); // Set the users state with the fetched data
     } catch (err) {
@@ -26,15 +38,17 @@ function UserList() {
     fetchUsers();
   }, []);
 
-  // Function to handle enable/disable button click
-  const handleEnableDisable = async (userId, currentStatus) => {
+  const handleEnableDisable = async (userId) => {
     try {
-      const newStatus = currentStatus === 'enabled' ? 'disabled' : 'enabled';
-      await axios.patch(`${process.env.REACT_APP_BASE_URL}/api/admin/users/${userId}/status`, { status: newStatus });
-      // Update the local state
-      setUsers(users.map(user => 
-        user._id === userId ? { ...user, status: newStatus } : user
-      ));
+      const response = await axios.put(
+        `${process.env.REACT_APP_BASE_URL}/api/admin/users/${userId}/status`
+      );
+
+      if (response.data.status === 1) {
+        fetchUsers();
+      } else {
+        setError("Failed to update user status");
+      }
     } catch (err) {
       console.error(err);
       setError("Failed to update user status");
@@ -48,7 +62,9 @@ function UserList() {
 
   return (
     <div className="user-list-container">
-      <Typography variant="h4" className="user-list-title">User List</Typography>
+      <Typography variant="h4" className="user-list-title">
+        User List
+      </Typography>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -82,10 +98,10 @@ function UserList() {
                 <TableCell>
                   <Button
                     variant="contained"
-                    color={user.status === 'enabled' ? 'secondary' : 'primary'}
-                    onClick={() => handleEnableDisable(user._id, user.status)}
+                    color={user.status === "enabled" ? "secondary" : "primary"} 
+                    onClick={() => handleEnableDisable(user._id)} 
                   >
-                    {user.status === 'enabled' ? 'Disable' : 'Enable'}
+                    {user.status === "enabled" ? "Disable" : "Enable"} 
                   </Button>
                 </TableCell>
               </TableRow>

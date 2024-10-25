@@ -5,13 +5,9 @@ exports.createBooking = async (req, res) => {
     const bookingData = req.body;
     console.log("Received booking data:", bookingData);
 
-    // Create a new Booking instance
     const newBooking = new Booking(bookingData);
 
-    // Save the booking to the database
     const savedBooking = await newBooking.save();
-
-    console.log("Saved booking:", savedBooking);
 
     res.status(201).json({
       success: true,
@@ -28,7 +24,7 @@ exports.createBooking = async (req, res) => {
   }
 };
 
-// Optional: Get all bookings
+
 exports.getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find();
