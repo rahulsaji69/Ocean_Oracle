@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ScheduledShip.css';
 
@@ -8,45 +8,103 @@ const ScheduledShip = () => {
   const [date, setDate] = useState('');
   const [vesselName, setVesselName] = useState('');
   const [schedules, setSchedules] = useState([]);
+  const [filteredSchedules, setFilteredSchedules] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('point-to-point');
+  const [dateError, setDateError] = useState('');
+  const [ports, setPorts] = useState([]);
+  console.log(ports);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
+  console.log(filteredSchedules);
+
+  const today = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    setDate(today);
+  }, []);
+
+  const fetchSchedule = async () => {
     setIsLoading(true);
-    setError(null);
-
     try {
-      let params = {};
-      if (activeTab === 'point-to-point') {
-        params = { startingPort: fromPort, destinationPort: toPort, date: date };
-      } else if (activeTab === 'vessel') {
-        params = { vesselName: vesselName };
-      }
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/ships/schedules`, { params });
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/ships/schedules`);
       setSchedules(response.data);
+
     } catch (error) {
-      console.error('Error fetching schedules:', error);
-      setError('Failed to fetch schedules. Please try again.');
+      setError("Error fetching schedules. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const fetchPorts = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/port`);
+      setPorts(response.data.ports);
+    } catch(error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchSchedule();
+    fetchPorts()
+  }, []);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    
+    const filtered = schedules.filter((schedule) => {
+      // Normalize inputs for reliable comparison
+      const inputFromPort = fromPort.trim().toLowerCase();
+      const inputToPort = toPort.trim().toLowerCase();
+  
+      // Normalize schedule ports and check each condition
+      const scheduleStartingPort = schedule.startingPort?.trim().toLowerCase();
+      const scheduleDestinationPort = schedule.destinationPort?.trim().toLowerCase();
+      const scheduleIntermediatePorts = schedule.intermediatePorts?.map(port => port.trim().toLowerCase());
+  
+      // Check if fromPort matches startingPort or any intermediate port
+      const matchesFromPort = !fromPort || 
+        scheduleStartingPort === inputFromPort || 
+        scheduleIntermediatePorts?.includes(inputFromPort);
+  
+      // Check if toPort matches destinationPort or any intermediate port
+      const matchesToPort = !toPort || 
+        scheduleDestinationPort === inputToPort || 
+        scheduleIntermediatePorts?.includes(inputToPort);
+  
+      return matchesFromPort && matchesToPort;
+    });
+  
+    console.log("Filtered Schedules:", filtered);
+    setFilteredSchedules(filtered);
+  };
+  
+  
+
+  const validateDate = (value) => {
+    const selectedDate = new Date(value);
+    const currentDate = new Date();
+    if (selectedDate < currentDate) {
+      return "Please select a future date";
+    }
+    return "";
+  };
+
+  const handleDateChange = (e) => {
+    const newDate = e.target.value;
+    setDate(newDate);
+    setDateError(validateDate(newDate));
+  };
+
+  const handleDateBlur = () => {
+    setDateError(validateDate(date));
+  };
+
   const handleSwapPorts = () => {
     setFromPort(toPort);
     setToPort(fromPort);
-  };
-
-  const handleInputFocus = (e) => {
-    e.target.parentNode.classList.add('focused');
-  };
-
-  const handleInputBlur = (e) => {
-    if (!e.target.value) {
-      e.target.parentNode.classList.remove('focused');
-    }
   };
 
   return (
@@ -74,11 +132,10 @@ const ScheduledShip = () => {
                     type="text"
                     value={fromPort}
                     onChange={(e) => setFromPort(e.target.value)}
-                    onFocus={handleInputFocus}
-                    onBlur={handleInputBlur}
+                    placeholder="From Port"
+                     list="portOptions"
                     required
                   />
-                  <label className="scheduled-ship-label">From Port</label>
                 </div>
                 <button type="button" onClick={handleSwapPorts} className="scheduled-ship-swap-btn">
                   <span className="material-icons">swap_horiz</span>
@@ -89,39 +146,32 @@ const ScheduledShip = () => {
                     type="text"
                     value={toPort}
                     onChange={(e) => setToPort(e.target.value)}
-                    onFocus={handleInputFocus}
-                    onBlur={handleInputBlur}
+                    placeholder="To Port"
+                     list="portOptions"
                     required
                   />
-                  <label className="scheduled-ship-label">To Port</label>
                 </div>
               </div>
               <div className="scheduled-ship-date-wrapper">
                 <input
-                  className="scheduled-ship-input"
+                  className={`scheduled-ship-input ${dateError ? 'error' : ''}`}
                   type="date"
                   value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  onFocus={handleInputFocus}
-                  onBlur={handleInputBlur}
+                  onChange={handleDateChange}
+                  onBlur={handleDateBlur}
+                  min={today}
+                  placeholder={today}
                   required
                 />
-                <label className="scheduled-ship-label">Departure Date</label>
+                {dateError && <span className="error-message">{dateError}</span>}
               </div>
+
+              <datalist id="portOptions">
+            {ports.map((port, index) => (
+              <option key={index} value={port} />
+            ))}
+          </datalist>
             </>
-          )}
-          {activeTab === 'vessel' && (
-            <div className="scheduled-ship-vessel-wrapper">
-              <span className="material-icons vessel-icon">directions_boat</span>
-              <input
-                className="scheduled-ship-input vessel-input"
-                type="text"
-                value={vesselName}
-                onChange={(e) => setVesselName(e.target.value)}
-                placeholder="Enter vessel name"
-                required
-              />
-            </div>
           )}
           <button type="submit" className="scheduled-ship-search-btn" disabled={isLoading}>
             {isLoading ? 'Searching...' : 'Search'}
@@ -129,11 +179,8 @@ const ScheduledShip = () => {
         </form>
       </div>
       {error && <p className="scheduled-ship-error-message">{error}</p>}
-      {schedules.length > 0 && (
+      {filteredSchedules.length > 0 && (
         <div className="scheduled-ship-results-container">
-          <h2>{fromPort} &gt; {toPort}</h2>
-          <p>SERVICE: COLOMBO - COCHIN - NEW MANGALORE FEEDER</p>
-          <p>{schedules.length} Results</p>
           <table>
             <thead>
               <tr>
@@ -145,7 +192,7 @@ const ScheduledShip = () => {
               </tr>
             </thead>
             <tbody>
-              {schedules.map((schedule, index) => (
+              {filteredSchedules.map((schedule, index) => (
                 <tr key={index}>
                   <td>{new Date(schedule.etd).toLocaleDateString()}</td>
                   <td>{new Date(schedule.eta).toLocaleDateString()}</td>

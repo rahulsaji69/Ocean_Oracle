@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './BookingForm.css';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +25,6 @@ const BookingForm = () => {
     cargoValue: '',
 
     // Shipment Type
-    
     serviceType: '',
     shippingClass: '',
 
@@ -60,10 +59,21 @@ const BookingForm = () => {
     // Additional Services
     additionalServices: [],
   });
+  const [dateError, setDateError] = useState('');
   const navigate = useNavigate();
 
-  // const [errors, setErrors] = useState({});
   const Base_URL = process.env.REACT_APP_BASE_URL;
+
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    // Set today's date as the initial value for preferredShippingDate
+    setFormData(prevData => ({
+      ...prevData,
+      preferredShippingDate: today
+    }));
+  }, []);
 
   const validateField = (name, value) => {
     let error = '';
@@ -72,6 +82,16 @@ const BookingForm = () => {
     }
     // Add more specific validations here if needed
     return error;
+  };
+
+  const validateDate = (value) => {
+    const selectedDate = new Date(value);
+    const currentDate = new Date();
+
+    if (selectedDate < currentDate) {
+      return "Please select a future date";
+    }
+    return "";
   };
 
   const handleChange = (e) => {
@@ -91,6 +111,10 @@ const BookingForm = () => {
         ...formData,
         cargoDimensions: { ...formData.cargoDimensions, [dimension]: value }
       });
+    } else if (type === 'date') {
+      const error = validateDate(value);
+      setDateError(error);
+      setFormData({ ...formData, [name]: value });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -107,7 +131,7 @@ const BookingForm = () => {
     });
 
     // Only proceed if no validation errors exist
-    if (Object.keys(formErrors).length === 0) {
+    if (Object.keys(formErrors).length === 0 && !dateError) {
       try {
         // Convert preferredShippingDate to ISO string
         const bookingData = {
@@ -119,20 +143,15 @@ const BookingForm = () => {
         console.log('Booking Successful:', response.data);
         alert('Booking submitted successfully!');
         navigate('/dashboard')
-        // Reset form or redirect user
       } catch (error) {
         console.error('Booking error:', error);
         if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
           console.error('Error data:', error.response.data);
           console.error('Error status:', error.response.status);
           console.error('Error headers:', error.response.headers);
         } else if (error.request) {
-          // The request was made but no response was received
           console.error('No response received:', error.request);
         } else {
-          // Something happened in setting up the request that triggered an Error
           console.error('Error message:', error.message);
         }
         alert('Error submitting booking. Please check the console for more details.');
@@ -182,7 +201,6 @@ const BookingForm = () => {
 
       <div className="form-section">
         <h3>Shipment Type</h3>
-        
         <select name="serviceType" value={formData.serviceType} onChange={handleChange} required>
           <option value="">Select Service Type</option>
           <option value="door-to-door">Door to Door</option>
@@ -204,7 +222,18 @@ const BookingForm = () => {
 
       <div className="form-section">
         <h3>Schedule and Route</h3>
-        <input type="date" name="preferredShippingDate" value={formData.preferredShippingDate} onChange={handleChange} required />
+        <div className="date-input-wrapper">
+          <input 
+            type="date" 
+            name="preferredShippingDate" 
+            value={formData.preferredShippingDate} 
+            onChange={handleChange} 
+            min={today}
+            required 
+          />
+          <label>Preferred Shipping Date</label>
+          {dateError && <span className="error-message">{dateError}</span>}
+        </div>
         <input type="text" name="preferredCarrier" value={formData.preferredCarrier} onChange={handleChange} placeholder="Preferred Carrier (optional)" />
       </div>
 

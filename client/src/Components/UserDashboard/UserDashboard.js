@@ -22,6 +22,9 @@ import AccountCircle from "@mui/icons-material/AccountCircle"; // Import Account
 import Logo from '../../Assets/Logo.jpg'; // Import the logo
 
 const Dashboard = () => {
+  const [fromPort, setFromPort] = useState('');
+  const [toPort, setToPort] = useState('');
+  const [date, setDate] = useState('');
   const [userDetails, setUserDetails] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null); // State for the menu anchor
@@ -172,12 +175,38 @@ const Dashboard = () => {
           {activeTab === 'schedules' && (
             <div className="schedules-content">
               <div className="port-inputs">
-                <input type="text" placeholder="From (Port)" className="port-input" />
-                <button className="swap-button">⇄</button>
-                <input type="text" placeholder="To (Port)" className="port-input" />
+                <input
+                  type="text"
+                  placeholder="From (Port)"
+                  className="port-input"
+                  value={fromPort}
+                  onChange={(e) => setFromPort(e.target.value)}
+                />
+                <button className="swap-button" onClick={() => {
+                  const temp = fromPort;
+                  setFromPort(toPort);
+                  setToPort(temp);
+                }}>⇄</button>
+                <input
+                  type="text"
+                  placeholder="To (Port)"
+                  className="port-input"
+                  value={toPort}
+                  onChange={(e) => setToPort(e.target.value)}
+                />
               </div>
-              <input type="date" className="date-input" />
-              <button className="search-button">Search</button>
+              <input
+                type="date"
+                className="date-input"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+              <button
+                className="search-button"
+                onClick={() => navigate(`/shipschedules?from=${fromPort}&to=${toPort}&date=${date}`)}
+              >
+                Search
+              </button>
             </div>
           )}
           {activeTab === 'contacts' && (
