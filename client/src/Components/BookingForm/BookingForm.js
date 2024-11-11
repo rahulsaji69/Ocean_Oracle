@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './BookingForm.css';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const BookingForm = () => {
   const [formData, setFormData] = useState({
@@ -133,28 +134,80 @@ const BookingForm = () => {
     // Only proceed if no validation errors exist
     if (Object.keys(formErrors).length === 0 && !dateError) {
       try {
-        // Convert preferredShippingDate to ISO string
+        // First create the booking
         const bookingData = {
           ...formData,
-          preferredShippingDate: formData.preferredShippingDate ? new Date(formData.preferredShippingDate).toISOString() : null,
+          preferredShippingDate: formData.preferredShippingDate ? 
+            new Date(formData.preferredShippingDate).toISOString() : null,
         };
-        console.log("Sending booking data:", bookingData);
-        const response = await axios.post(`${Base_URL}/api/booking/bookings`, bookingData);
-        console.log('Booking Successful:', response.data);
-        alert('Booking submitted successfully!');
-        navigate('/dashboard')
+        
+        const bookingResponse = await axios.post(
+          `${Base_URL}/api/booking/bookings`, 
+          bookingData
+        );
+        console.log('Booking Successful:', bookingResponse.data);
+
+        // Then create Razorpay order
+        const orderResponse = await axios.post(
+          `${Base_URL}/api/payment/create-order`,
+          {
+            amount: 10000 * 100, 
+            bookingId: bookingResponse.data.data._id
+          }
+        );
+
+      
+        const options = {
+          key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+          amount: orderResponse.data.order.amount,
+          currency: "INR",
+          name: "OCEANORACLE PAYMENT GATEWAY",
+          description: "Booking Payment",
+          order_id: orderResponse.data.order.id,
+          handler: async function (response) {
+            try {
+              // Verify payment
+              await axios.post(`${Base_URL}/api/payment/verify`, {
+                bookingId: bookingResponse.data.data._id,
+                paymentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+                signature: response.razorpay_signature,
+                amount: orderResponse.data.order.amount
+              });
+              Swal.fire({
+                title: "Payment successful!",
+                text: " Booking confirmed",
+                icon: "success"
+              });
+              navigate('/dashboard');
+            } catch (error) {
+              console.error('Payment verification failed:', error);
+              alert('Payment verification failed. Please contact support.');
+            }
+          },
+          prefill: {
+            name: formData.shipperName,
+            email: formData.shipperEmail,
+            contact: formData.shipperPhone
+          },
+          theme: {
+            color: "#3399cc"
+          }
+        };
+
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+
       } catch (error) {
-        console.error('Booking error:', error);
+        console.error('Error:', error);
+        let errorMessage = 'An error occurred. Please try again.';
+        
         if (error.response) {
           console.error('Error data:', error.response.data);
-          console.error('Error status:', error.response.status);
-          console.error('Error headers:', error.response.headers);
-        } else if (error.request) {
-          console.error('No response received:', error.request);
-        } else {
-          console.error('Error message:', error.message);
+          errorMessage = error.response.data.message || errorMessage;
         }
-        alert('Error submitting booking. Please check the console for more details.');
+        
+        alert(errorMessage);
       }
     } else {
       console.error('Form validation errors:', formErrors);

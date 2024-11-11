@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ScheduledShip.css';
+import { useNavigate } from 'react-router-dom';
 
 const ScheduledShip = () => {
   const [fromPort, setFromPort] = useState('');
@@ -14,6 +15,7 @@ const ScheduledShip = () => {
   const [activeTab, setActiveTab] = useState('point-to-point');
   const [dateError, setDateError] = useState('');
   const [ports, setPorts] = useState([]);
+  const navigate = useNavigate();
   console.log(ports);
 
   console.log(filteredSchedules);
@@ -105,6 +107,20 @@ const ScheduledShip = () => {
   const handleSwapPorts = () => {
     setFromPort(toPort);
     setToPort(fromPort);
+  };
+
+  const handleBooking = (schedule) => {
+    // Navigate to booking form with schedule details as state
+    navigate('/ebookings', {
+      state: {
+        scheduleId: schedule._id,
+        originPort: schedule.startingPort,
+        destinationPort: schedule.destinationPort,
+        preferredShippingDate: schedule.etd,
+        preferredCarrier: schedule.shipId?.shipName || '',
+        voyageNumber: schedule.voyageNumber
+      }
+    });
   };
 
   return (
@@ -199,8 +215,12 @@ const ScheduledShip = () => {
                   <td>{schedule.shipId?.shipName || 'N/A'} / {schedule.voyageNumber || 'N/A'}</td>
                   <td>{Math.ceil((new Date(schedule.eta) - new Date(schedule.etd)) / (1000 * 60 * 60 * 24))} Days</td>
                   <td>
-                    <button className="scheduled-ship-quote-btn">I need a quote</button>
-                    <button className="scheduled-ship-book-btn">I'm ready to book</button>
+                    <button 
+                      className="scheduled-ship-book-btn"
+                      onClick={() => handleBooking(schedule)}
+                    >
+                      I'm ready to book
+                    </button>
                   </td>
                 </tr>
               ))}

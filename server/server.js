@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const indexRoutes = require("./Routes/indexRoutes");
-
+const paymentRoutes = require('./Routes/paymentRoutes');
 dotenv.config();
 
 const app = express();
@@ -20,7 +20,7 @@ mongoose
   .catch((err) => console.log(err));
 
   app.use("/api", indexRoutes);
-  
+  app.use('/api/payment', paymentRoutes);
 
 const PORT = process.env.PORT || 5000;
 

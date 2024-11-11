@@ -136,7 +136,7 @@ const LoginForm = () => {
           <div className="login-actions">
             <a href="/forgot-password">Forgot your password?</a>
 
-            <button type="submit" className="login-button">
+            <button type="submit" id="login-button" className="login-button">
               Login
             </button>
           </div>

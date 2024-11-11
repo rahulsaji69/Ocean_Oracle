@@ -61,8 +61,18 @@ const BookingSchema = new mongoose.Schema({
 
   // Metadata
   createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-});
+  updatedAt: { type: Date, default: Date.now },
+
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'paid', 'failed'],
+    default: 'pending'
+  },
+  paymentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Payment'
+  }
+}, { timestamps: true });
 
 // Add a pre-save hook to update the 'updatedAt' field
 BookingSchema.pre('save', function(next) {
