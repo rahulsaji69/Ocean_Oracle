@@ -146,6 +146,7 @@ const ScheduledShip = () => {
                   <input
                     className="scheduled-ship-input"
                     type="text"
+                    id="fromPort"
                     value={fromPort}
                     onChange={(e) => setFromPort(e.target.value)}
                     placeholder="From Port"
@@ -153,13 +154,14 @@ const ScheduledShip = () => {
                     required
                   />
                 </div>
-                <button type="button" onClick={handleSwapPorts} className="scheduled-ship-swap-btn">
+                <button type="button" onClick={handleSwapPorts}  className="scheduled-ship-swap-btn">
                   <span className="material-icons">swap_horiz</span>
                 </button>
                 <div className="scheduled-ship-input-wrapper">
                   <input
                     className="scheduled-ship-input"
                     type="text"
+                    id="toPort"
                     value={toPort}
                     onChange={(e) => setToPort(e.target.value)}
                     placeholder="To Port"
@@ -189,7 +191,7 @@ const ScheduledShip = () => {
           </datalist>
             </>
           )}
-          <button type="submit" className="scheduled-ship-search-btn" disabled={isLoading}>
+          <button type="submit" id="searchBtn" className="scheduled-ship-search-btn" disabled={isLoading}>
             {isLoading ? 'Searching...' : 'Search'}
           </button>
         </form>
@@ -215,7 +217,7 @@ const ScheduledShip = () => {
                   <td>{schedule.shipId?.shipName || 'N/A'} / {schedule.voyageNumber || 'N/A'}</td>
                   <td>{Math.ceil((new Date(schedule.eta) - new Date(schedule.etd)) / (1000 * 60 * 60 * 24))} Days</td>
                   <td>
-                    <button 
+                    <button id="bookBtn"
                       className="scheduled-ship-book-btn"
                       onClick={() => handleBooking(schedule)}
                     >

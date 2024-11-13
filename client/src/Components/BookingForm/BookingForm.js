@@ -3,6 +3,8 @@ import axios from 'axios';
 import './BookingForm.css';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 const BookingForm = () => {
   const [formData, setFormData] = useState({
@@ -121,6 +123,64 @@ const BookingForm = () => {
     }
   };
 
+  const generateBill = (bookingDetails, paymentDetails) => {
+    const doc = new jsPDF();
+    
+    // Add company logo/header
+    doc.setFontSize(20);
+    doc.text('OCEANORACLE SHIPPING', 105, 15, { align: 'center' });
+    
+    // Add invoice details
+    doc.setFontSize(12);
+    doc.text(`Invoice Date: ${new Date().toLocaleDateString()}`, 15, 30);
+    doc.text(`Booking ID: ${bookingDetails._id}`, 15, 37);
+    doc.text(`Payment ID: ${paymentDetails.paymentId}`, 15, 44);
+
+    // Add shipper details
+    doc.setFontSize(14);
+    doc.text('Shipper Details:', 15, 55);
+    doc.setFontSize(12);
+    doc.text(`Name: ${bookingDetails.shipperName}`, 20, 62);
+    doc.text(`Email: ${bookingDetails.shipperEmail}`, 20, 69);
+    doc.text(`Phone: ${bookingDetails.shipperPhone}`, 20, 76);
+
+    // Add cargo details
+    doc.setFontSize(14);
+    doc.text('Cargo Details:', 15, 90);
+    
+    // Create table for cargo details
+    const cargoData = [
+      ['Type', 'Weight', 'Quantity', 'Value'],
+      [
+        bookingDetails.cargoType,
+        `${bookingDetails.cargoWeight} kg`,
+        bookingDetails.cargoQuantity,
+        `₹${bookingDetails.cargoValue}`
+      ]
+    ];
+
+    doc.autoTable({
+      startY: 95,
+      head: [cargoData[0]],
+      body: [cargoData[1]],
+    });
+
+    // Add payment details
+    doc.setFontSize(14);
+    doc.text('Payment Details:', 15, 140);
+    doc.setFontSize(12);
+    doc.text(`Amount Paid: ₹${paymentDetails.amount / 100}`, 20, 147);
+    doc.text(`Payment Method: ${bookingDetails.paymentMethod}`, 20, 154);
+    doc.text(`Payment Status: Successful`, 20, 161);
+
+    // Add footer
+    doc.setFontSize(10);
+    doc.text('Thank you for choosing OCEANORACLE SHIPPING!', 105, 280, { align: 'center' });
+
+    // Save the PDF
+    doc.save(`OCEANORACLE_Invoice_${bookingDetails._id}.pdf`);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -167,18 +227,26 @@ const BookingForm = () => {
           handler: async function (response) {
             try {
               // Verify payment
-              await axios.post(`${Base_URL}/api/payment/verify`, {
+              const verificationResponse = await axios.post(`${Base_URL}/api/payment/verify`, {
                 bookingId: bookingResponse.data.data._id,
                 paymentId: response.razorpay_payment_id,
                 orderId: response.razorpay_order_id,
                 signature: response.razorpay_signature,
                 amount: orderResponse.data.order.amount
               });
+
+              // Generate and download bill
+              generateBill(bookingResponse.data.data, {
+                paymentId: response.razorpay_payment_id,
+                amount: orderResponse.data.order.amount
+              });
+
               Swal.fire({
                 title: "Payment successful!",
-                text: " Booking confirmed",
+                text: "Booking confirmed and invoice has been downloaded",
                 icon: "success"
               });
+              
               navigate('/dashboard');
             } catch (error) {
               console.error('Payment verification failed:', error);
@@ -269,8 +337,8 @@ const BookingForm = () => {
 
       <div className="form-section">
         <h3>Origin and Destination</h3>
-        <input type="text" name="originPort" value={formData.originPort} onChange={handleChange} placeholder="Origin Port" required />
-        <input type="text" name="destinationPort" value={formData.destinationPort} onChange={handleChange} placeholder="Destination Port" required />
+        <input type="text" id="originPort" name="originPort" value={formData.originPort} onChange={handleChange} placeholder="Origin Port" required />
+        <input type="text" id="destinationPort" name="destinationPort" value={formData.destinationPort} onChange={handleChange} placeholder="Destination Port" required />
       </div>
 
       <div className="form-section">
@@ -287,17 +355,17 @@ const BookingForm = () => {
           <label>Preferred Shipping Date</label>
           {dateError && <span className="error-message">{dateError}</span>}
         </div>
-        <input type="text" name="preferredCarrier" value={formData.preferredCarrier} onChange={handleChange} placeholder="Preferred Carrier (optional)" />
+        <input type="text" id="preferredCarrier" name="preferredCarrier" value={formData.preferredCarrier} onChange={handleChange} placeholder="Preferred Carrier (optional)" />
       </div>
 
       <div className="form-section">
         <h3>Insurance</h3>
         <label>
-          <input type="checkbox" name="insuranceRequired" checked={formData.insuranceRequired} onChange={handleChange} />
+          <input type="checkbox" id="insuranceRequired" name="insuranceRequired" checked={formData.insuranceRequired} onChange={handleChange} />
           Insurance Required
         </label>
         {formData.insuranceRequired && (
-          <input type="number" name="insuranceValue" value={formData.insuranceValue} onChange={handleChange} placeholder="Insurance Value" required />
+          <input type="number" id="insuranceValue" name="insuranceValue" value={formData.insuranceValue} onChange={handleChange} placeholder="Insurance Value" required />
         )}
       </div>
 
@@ -346,20 +414,20 @@ const BookingForm = () => {
       <div className="form-section">
         <h3>Additional Services</h3>
         <label>
-          <input type="checkbox" name="additionalServices" value="customsClearance" checked={formData.additionalServices.includes('customsClearance')} onChange={handleChange} />
+          <input type="checkbox" id="customsClearance" name="additionalServices" value="customsClearance" checked={formData.additionalServices.includes('customsClearance')} onChange={handleChange} />
           Customs Clearance
         </label>
         <label>
-          <input type="checkbox" name="additionalServices" value="packaging" checked={formData.additionalServices.includes('packaging')} onChange={handleChange} />
+          <input type="checkbox" id="packaging" name="additionalServices" value="packaging" checked={formData.additionalServices.includes('packaging')} onChange={handleChange} />
           Packaging
         </label>
         <label>
-          <input type="checkbox" name="additionalServices" value="warehousing" checked={formData.additionalServices.includes('warehousing')} onChange={handleChange} />
+          <input type="checkbox" id="warehousing" name="additionalServices" value="warehousing" checked={formData.additionalServices.includes('warehousing')} onChange={handleChange} />
           Warehousing
         </label>
       </div>
 
-      <button type="submit" className="submit-btn">Submit Booking</button>
+      <button type="submit" id="submitBtn" className="submit-btn">Submit Booking</button>
     </form>
   );
 };
